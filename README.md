@@ -19,7 +19,14 @@ A simple shopping app built with React Native and Expo.
    cd shopping-app
    ```
 2. Install dependencies:
+
    ```bash
    npm install
 
+   ```
+
+3. Download the app:
+   ```bash
+   git clone https://github.com/oloyedewaris/shopping-app.git
+   cd shopping-app
    ```

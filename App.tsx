@@ -1,19 +1,49 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import OrderSuccessScreen from './screens/OrderSuccessScreen';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from './screens/HomeScreen';
+import "react-native-gesture-handler";
 
-const Stack = createNativeStackNavigator();
+import { StatusBar } from "expo-status-bar";
+import { Colors } from "@/utils/styles";
+import { ContextProvider } from "@/contexts/CartContext";
+import Toast, { BaseToast, ErrorToast, ToastProps } from "react-native-toast-message";
+import NavigationContainer from "@/navigation";
 
 export default function App() {
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ContextProvider>
+      <StatusBar style="auto" />
+      <NavigationContainer />
+      <Toast config={toastConfig} />
+    </ContextProvider>
   );
 }
+
+const toastConfig = {
+  success: (props: ToastProps) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: "green" }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        fontSize: 18,
+        fontWeight: "bold",
+        color: Colors.primary500,
+      }}
+      text2Style={{
+        fontSize: 16,
+      }}
+    />
+  ),
+  error: (props: ToastProps) => (
+    <ErrorToast
+      {...props}
+      style={{ borderLeftColor: "red" }}
+      text1Style={{
+        fontSize: 18,
+        fontWeight: "bold",
+        color: Colors.error500,
+      }}
+      text2Style={{
+        fontSize: 16,
+      }}
+    />
+  ),
+};
