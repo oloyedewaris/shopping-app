@@ -26,7 +26,4 @@ A simple shopping app built with React Native and Expo.
    ```
 
 3. Download the app:
-   ```bash
-   git clone https://github.com/oloyedewaris/shopping-app.git
-   cd shopping-app
-   ```
+   https://expo.dev/artifacts/eas/oGwuvyXebXg9pUfYx8Hq2d.apk
