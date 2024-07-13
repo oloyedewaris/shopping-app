@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const URL =
-  "https://api.timbu.cloud/products?organization_id=03c3db909b1f4616a786a4fdf4d7e98c&reverse_sort=false&page=1&size=10&Appid=HIWA8JQD8VXQRXY&Apikey=427bbb3220eb475990086caf7484a50420240704193628397878";
+  "https://api.timbu.cloud/products?organization_id=f2919a8959de42678ecfee097b92dbad&reverse_sort=false&page=1&size=10&Appid=2JUPEW4GZJ444X5&Apikey=a10504a42558408ab7ca4c0f541a1cd620240713120243519515";
 
 export async function allProducts() {
   const res = await axios.get(URL);

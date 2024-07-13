@@ -1,4 +1,4 @@
-import { Image, Modal, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Modal, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { useCart } from "@/contexts/CartContext";
 import Header from "@/components/Header";
 import { formatCurrency } from "@/utils/helpers";
@@ -14,55 +14,16 @@ interface ModalProps {
 }
 
 function CheckoutModal({ isVisible, setIsVisible, navigation }: ModalProps) {
-  const { cart, totalPrice, clearCart }: any = useCart();
-
   function handleCheckout() {
     setIsVisible(false);
-    clearCart();
     navigation.navigate("Products");
   }
 
-  const cartItem = cart[0];
   return (
     <Modal animationType="slide" visible={isVisible}>
-      <ScrollView style={style.container}>
-        <Image
-          source={require("@/assets/checkout/icon-order-confirmation.svg")}
-          style={style.image}
-        />
+      <SafeAreaView >
 
-        <Header childrenStyle={style.headerBig}>Order Succesful</Header>
-
-        <Text style={style.text2}>You order has been successfully placed</Text>
-        <View style={style.flexCont}>
-          {cart.map((item: any) => (
-            <View style={style.flexCon}>
-              <View key={item.name} style={style.flex}>
-                <Image
-                  source={{
-                    uri: `https://api.timbu.cloud/images/${item.photos[0].url}`,
-                  }}
-                  style={style.smallImage}
-                />
-                <Text style={style.header}>{item.name}</Text>
-              </View>
-              <Text style={style.text}>
-                {formatCurrency(item.current_price[0].GBP[0])}
-              </Text>
-            </View>
-          ))}
-          <View style={style.moreItem}>
-            <Text style={style.text}>
-              Ordered
-            </Text>
-          </View>
-        </View>
-        <View style={style.headerDark}>
-          <Header childrenStyle={style.totalTxt}>Total Paid</Header>
-          <Header childrenStyle={style.total}>{formatCurrency(totalPrice)}</Header>
-        </View>
-        <Button onPress={handleCheckout}>Back to shopping</Button>
-      </ScrollView>
+      </SafeAreaView>
     </Modal>
   );
 }
@@ -71,9 +32,12 @@ export default CheckoutModal;
 
 const style = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: "#fff",
     padding: 16,
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
 
   text2: {

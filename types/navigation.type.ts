@@ -6,4 +6,5 @@ export type HomeNavigationList = {
 export type BottomNavigationList = {
   Products: undefined;
   Cart: undefined;
+  Checkout: undefined;
 };

@@ -1,7 +1,8 @@
-import { TouchableOpacity, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
+import { TouchableOpacity, StyleSheet, Text, TextStyle, ViewStyle } from "react-native";
 import { Colors } from "@/utils/styles";
+import { TouchableOpacityProps } from "react-native-gesture-handler";
 
-interface BottonProps {
+interface BottonProps extends TouchableOpacityProps {
   children: React.ReactNode;
   style?: ViewStyle;
   textStyle?: TextStyle;
@@ -9,9 +10,9 @@ interface BottonProps {
 }
 
 
-function Button({ children, style, textStyle, onPress }: BottonProps) {
+function Button({ children, style, textStyle, onPress, ...rest }: BottonProps) {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
+    <TouchableOpacity onPress={onPress} style={[styles.button, style]} {...rest}>
       <Text style={[styles.text, textStyle]}>{children}</Text>
     </TouchableOpacity>
   );
@@ -21,11 +22,9 @@ export default Button;
 
 const styles = StyleSheet.create({
   button: {
-    flex: 1,
+    // flex: 1,
     height: 60,
     borderRadius: 4,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
     backgroundColor: Colors.primary500,
     justifyContent: "center",
     alignItems: "center",
@@ -35,6 +34,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     fontWeight: "bold",
-    textTransform: "uppercase",
+    // textTransform: "uppercase",
   },
 });

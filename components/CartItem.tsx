@@ -1,12 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { formatCurrency } from "@/utils/helpers";
 import Header from "@/components/Header";
 import { Colors } from "@/utils/styles";
 import { useCart } from "@/contexts/CartContext";
+import { AntDesign } from '@expo/vector-icons';
 
 function CartItem({ cartItem }: { cartItem: any }) {
-  const { removeFromCart }: any = useCart();
+  const { increaseCount, decreaseCount, cart, removeFromCart }: any = useCart();
 
   function handleRemoveItem() {
     Alert.alert(
@@ -26,6 +27,14 @@ function CartItem({ cartItem }: { cartItem: any }) {
     );
   }
 
+  const addMore = () => {
+    increaseCount(cartItem.unique_id)
+  }
+  const removeFrom = () => {
+    if (cartItem.count > 1)
+      decreaseCount(cartItem.unique_id)
+  }
+
   return (
     <View style={style.rootContainer}>
       <View style={style.flex}>
@@ -38,14 +47,26 @@ function CartItem({ cartItem }: { cartItem: any }) {
           />
           <View>
             <Header childrenStyle={style.header}>{cartItem.name}</Header>
-            <Text style={style.text}>
-              {formatCurrency(cartItem.current_price[0].GBP[0])}
-            </Text>
+            <Text style={style.description}>{cartItem.description}</Text>
+            <View style={{ gap: 20, flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity disabled={cartItem.count <= 1} onPress={removeFrom} style={style.box}>
+                <Text>-</Text>
+              </TouchableOpacity>
+              <Text style={{ height: 20 }}>{cartItem?.count}</Text>
+              <TouchableOpacity onPress={addMore} style={style.box}>
+                <Text>+</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-        <Pressable style={style.btnRem} onPress={handleRemoveItem}>
-          <Ionicons name="remove" size={24} color="black" />
-        </Pressable>
+        <View style={style.endCon}>
+          <Pressable style={style.btnRem} onPress={handleRemoveItem}>
+            <Ionicons name="trash-outline" size={20} color="#2A2A2A99" />
+          </Pressable>
+          <Text style={style.price}>
+            {formatCurrency(cartItem.current_price[0].NGN[0])}
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -56,13 +77,20 @@ export default CartItem;
 const style = StyleSheet.create({
   rootContainer: {
     marginBottom: 8,
-    padding: 16,
+    borderWidth: 1,
+    borderColor: '#2A2A2A1A',
+    padding: 10,
   },
   flex: {
     flexDirection: "row",
     justifyContent: "space-between",
-    // paddingHorizontal: 20,
     marginBottom: 10,
+    width: '100%'
+  },
+  price: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2A2A2A'
   },
 
   btn: {
@@ -73,16 +101,9 @@ const style = StyleSheet.create({
   image: {
     width: 80,
     height: 80,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    borderRadius: 4,
-    marginRight: 8,
   },
   btnRem: {
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "transparent",
     height: 40,
     shadowOpacity: 0.2,
     elevation: 3,
@@ -93,13 +114,25 @@ const style = StyleSheet.create({
 
   nextFlex: {
     flexDirection: "row",
-    gap: 2,
+    gap: 10,
     alignItems: "center",
   },
   header: {
-    fontSize: 20,
+    fontSize: 12,
+    fontWeight: "600",
+    color: '#2A2A2A',
+    marginBottom: 4
+  },
+  description: {
+    fontSize: 10,
     fontWeight: "400",
-    width: 180,
+    color: '#2A2A2A',
+    marginBottom: 10
+  },
+  endCon: {
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingVertical: 4
   },
   text: {
     fontSize: 16,
@@ -109,4 +142,12 @@ const style = StyleSheet.create({
     // paddingTop: 2,
     color: Colors.primary500,
   },
+  box: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });

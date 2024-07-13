@@ -55,15 +55,15 @@ function Product() {
 
   return (
     <View style={styles.product}>
-      <Image
+      {product.photos[0]?.url && <Image
         source={{
           uri: `https://api.timbu.cloud/images/${product.photos[0].url}`,
         }}
         style={styles.image}
-      />
+      />}
       <Text style={styles.name}>{product.name}</Text>
       <Text style={styles.price}>
-        {formatCurrency(product.current_price[0].GBP[0])}
+        {formatCurrency(product.current_price[0]?.NGN[0])}
       </Text>
       <View style={styles.buttonContainer}>
         <Button

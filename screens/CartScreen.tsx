@@ -1,10 +1,8 @@
-import { Pressable, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, FlatList, StyleSheet, Text, View } from "react-native";
 import { useCart } from "@/contexts/CartContext";
 import CartItem from "@/components/CartItem";
 import Button from "@/components/Button";
 import { formatCurrency } from "@/utils/helpers";
-import { useState } from "react";
-import CheckoutModal from "@/components/CheckoutModal";
 import { Colors } from "@/utils/styles";
 import { useNavigation } from "@react-navigation/native";
 import { BottomNavigationList } from "@/types/navigation.type";
@@ -14,10 +12,8 @@ function CartScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<BottomNavigationList>>();
   const { cart, totalPrice }: any = useCart();
 
-  const [isVisible, setIsVisible] = useState(false);
-
   function checkout() {
-    setIsVisible(true);
+    navigation.navigate('Checkout');
   }
 
   function handleNav() {
@@ -27,33 +23,40 @@ function CartScreen() {
   if (!cart?.length)
     return (
       <View style={styles.empty}>
-        <Text style={styles.centerTxt}>Cart is empty</Text>
+        <Text style={styles.centerTxt}>No Item in Cart</Text>
         <Pressable onPress={handleNav}>
           <Text style={styles.centerBtn}>Add Items </Text>
         </Pressable>
       </View>
     );
+
   return (
     <View style={styles.container}>
       <FlatList
         data={cart}
         renderItem={({ item }) => <CartItem cartItem={item} />}
         keyExtractor={(item) => item.unique_id}
-      />
+        ListFooterComponent={(
+          <View style={styles.footer}>
+            <Text style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Shopping Summary</Text>
+            <View style={styles.flex}>
+              <Text style={styles.text}>Sub-Total</Text>
+              <Text style={styles.header}>{formatCurrency(totalPrice)}</Text>
+            </View>
+            <View style={styles.flex}>
+              <Text style={styles.text}>Delivery Fee</Text>
+              <Text style={styles.header}>{formatCurrency(1500)}</Text>
+            </View>
+            <View style={{ width: '100%', marginVertical: 15, height: 1, borderColor: '#191919', borderWidth: 0.5 }} />
+            <View style={styles.flex}>
+              <Text style={styles.text}>Total Amount</Text>
+              <Text style={styles.header}>{formatCurrency(1500 + Number(totalPrice))}</Text>
+            </View>
 
-      <CheckoutModal
-        isVisible={isVisible}
-        setIsVisible={setIsVisible}
-        navigation={navigation}
+            <Button style={{ borderRadius: 20, marginTop: 10 }} onPress={checkout}>Checkout</Button>
+          </View>
+        )}
       />
-      <View style={styles.footer}>
-        <View style={styles.flex}>
-          <Text style={styles.text}>Total</Text>
-          <Text style={styles.header}>{formatCurrency(totalPrice)}</Text>
-        </View>
-
-        <Button onPress={checkout}>Checkout</Button>
-      </View>
     </View>
   );
 }
@@ -65,20 +68,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     padding: 16,
+    marginBottom: 40
   },
   footer: {
-    height: 100,
-    paddingTop: 10
+    marginTop: 30,
+    paddingTop: 20,
+    paddingHorizontal: 15,
+    paddingBottom: 10,
+    backgroundColor: '#EDEDEDAB'
   },
   btn: {
     height: 80,
   },
   header: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: "600",
   },
   text: {
-    fontSize: 20,
+    fontSize: 12,
+    fontWeight: '500',
     color: "#979797",
   },
   empty: {
@@ -90,10 +98,9 @@ const styles = StyleSheet.create({
   },
 
   flex: {
+    marginTop: 5,
     flexDirection: "row",
     justifyContent: "space-between",
-    // paddingHorizontal: 20,
-    marginBottom: 10,
   },
 
   centerTxt: {

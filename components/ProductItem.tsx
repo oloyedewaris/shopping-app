@@ -1,4 +1,4 @@
-import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 import Button from "@/components/Button";
 import { Colors } from "@/utils/styles";
@@ -8,6 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import Toast from "react-native-toast-message";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { HomeNavigationList } from "@/types/navigation.type";
+import { EvilIcons } from '@expo/vector-icons';
 
 function ProductItem({ product }: { product: any }) {
   const navigation = useNavigation<NativeStackNavigationProp<HomeNavigationList>>();
@@ -58,26 +59,35 @@ function ProductItem({ product }: { product: any }) {
 
   return (
     <View style={styles.product}>
-      <Image
-        source={{
-          uri: `https://api.timbu.cloud/images/${product.photos[0].url}`,
-        }}
-        style={styles.image}
-      />
+      <TouchableOpacity
+      // onPress={viewProduct}
+      >
+        <View style={styles.imageCon}>
+          {product.photos[0]?.url && <Image
+            source={{
+              uri: `https://api.timbu.cloud/images/${product.photos[0]?.url}`,
+            }}
+            style={styles.image}
+          />}
+        </View>
+      </TouchableOpacity>
       <Text style={styles.name}>{product.name}</Text>
-      <Text style={styles.price}>
-        {formatCurrency(product.current_price[0].GBP[0])}
-      </Text>
-      <View style={styles.buttonContainer}>
-        <Button
-          style={isInCart ? styles.inCart : styles.btnStyle}
-          textStyle={isInCart ? styles.inCartTxt : styles.btnTxt}
-          onPress={handleAddToCart}
-        >
-          {isInCart ? "Remove" : "Add To Cart"}
-        </Button>
-        <Button onPress={viewProduct}>View</Button>
+      <Text style={styles.description} numberOfLines={1}>{product.description}</Text>
+      <View style={styles.star}>
+        {Array(5).fill(1).map(star => (
+          <EvilIcons key={Math.random()} name="star" size={17} color="#FFC657" />
+        ))}
       </View>
+      <Text style={styles.price}>
+        {formatCurrency(product.current_price[0]?.NGN[0])}
+      </Text>
+      <Button
+        style={styles.btnStyle}
+        textStyle={styles.btnTxt}
+        onPress={handleAddToCart}
+      >
+        {isInCart ? "Remove" : "Add To Cart"}
+      </Button>
     </View>
   );
 }
@@ -86,31 +96,53 @@ export default ProductItem;
 
 const styles = StyleSheet.create({
   product: {
-    margin: 16,
+    marginHorizontal: 10,
     flex: 1,
     marginBottom: 24,
+    width: 200,
+    height: 100
+  },
+  imageCon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: 184,
+    backgroundColor: '#EDEDEDAB'
+  },
+  star: {
+    flexDirection: 'row',
+    gap: 0,
+    marginBottom: 4,
   },
   name: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 4,
-    paddingHorizontal: 12,
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: 2,
     paddingVertical: 4,
     paddingTop: 12,
     textTransform: "uppercase",
     color: Colors.primary800,
   },
+  description: {
+    fontSize: 12,
+    fontWeight: "400",
+    marginBottom: 2,
+    paddingVertical: 4,
+    paddingTop: 0,
+    textTransform: "uppercase",
+    color: Colors.primary800,
+  },
   price: {
-    fontSize: 16,
-    fontWeight: "bold",
-    paddingHorizontal: 16,
+    fontSize: 13,
+    fontWeight: "500",
     paddingVertical: 8,
     paddingTop: 2,
     color: Colors.primary500,
   },
   image: {
-    height: 300,
-    width: "100%",
+    height: 94,
+    minWidth: 94,
+    width: 'auto',
     borderRadius: 4,
     // elevation: 8,
     shadowColor: "#000",
@@ -121,26 +153,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 8,
-    gap: 20,
-  },
-
   btnStyle: {
-    backgroundColor: Colors.primary100,
+    backgroundColor: 'transparent',
+    borderRadius: 14,
+    borderColor: Colors.primary500,
+    borderWidth: 1,
+    height: 38,
+    width: 93
   },
   btnTxt: {
-    color: Colors.primary500,
-    // fontWeight: "bold",
-  },
-
-  inCart: {
-    backgroundColor: Colors.primary900,
-  },
-  inCartTxt: {
-    color: "#fff",
+    color: 'black',
+    fontWeight: "400",
+    fontSize: 12
   },
 });
