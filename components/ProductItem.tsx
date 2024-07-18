@@ -4,21 +4,23 @@ import Button from "@/components/Button";
 import { Colors } from "@/utils/styles";
 import { formatCurrency } from "@/utils/helpers";
 import { useNavigation } from "@react-navigation/native";
-import { useCart } from "@/contexts/CartContext";
+import { useShop } from "@/contexts/CartContext";
 import Toast from "react-native-toast-message";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { HomeNavigationList } from "@/types/navigation.type";
+import { ShopContextType, HomeNavigationList, ProductType } from "@/types/all.type";
 import { EvilIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
-function ProductItem({ product }: { product: any }) {
+function ProductItem({ product }: { product: ProductType }) {
   const navigation = useNavigation<NativeStackNavigationProp<HomeNavigationList>>();
-  const { addToCart, cart, removeFromCart }: any = useCart();
+  const { addToCart, cart, saved, addToSaved, removeFromSaved, removeFromCart } = useShop() as ShopContextType;
 
   function viewProduct() {
     navigation.navigate("Product", { product });
   }
 
   const isInCart = cart.some((crt: { unique_id: string }) => crt.unique_id === product.unique_id);
+  const isSaved = saved.some((svd: { unique_id: string }) => svd.unique_id === product.unique_id);
 
   function handleRemoveItem() {
     removeFromCart(product.unique_id);
@@ -57,13 +59,31 @@ function ProductItem({ product }: { product: any }) {
     }
   }
 
+  const handleBookmark = () => {
+    if (!isSaved) {
+      addToSaved(product);
+      Toast.show({
+        type: "success",
+        text1: "Item Added",
+        text2: `${product.name.toUpperCase()} successfully added to saved items `,
+      });
+    } else {
+      removeFromSaved(product.unique_id);
+      Toast.show({
+        type: "error",
+        text1: "Item Removed",
+        text2: `${product.name.toUpperCase()} removed from saved items `,
+      });
+    }
+  }
+
   return (
     <View style={styles.product}>
-      <TouchableOpacity
-      // onPress={viewProduct}
-      >
+      <TouchableOpacity onPress={viewProduct}>
         <View style={styles.imageCon}>
           {product.photos[0]?.url && <Image
+            resizeMode="contain"
+            resizeMethod="auto"
             source={{
               uri: `https://api.timbu.cloud/images/${product.photos[0]?.url}`,
             }}
@@ -81,13 +101,22 @@ function ProductItem({ product }: { product: any }) {
       <Text style={styles.price}>
         {formatCurrency(product.current_price[0]?.NGN[0])}
       </Text>
-      <Button
-        style={styles.btnStyle}
-        textStyle={styles.btnTxt}
-        onPress={handleAddToCart}
-      >
-        {isInCart ? "Remove" : "Add To Cart"}
-      </Button>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Button
+          style={styles.btnStyle}
+          textStyle={styles.btnTxt}
+          onPress={handleAddToCart}
+        >
+          {isInCart ? "Remove" : "Add To Cart"}
+        </Button>
+        <TouchableOpacity onPress={handleBookmark}>
+          {isSaved ? (
+            <FontAwesome name="bookmark" size={24} color={Colors.primary500} />
+          ) : (
+            <FontAwesome name="bookmark-o" size={24} color={Colors.primary500} />
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -140,11 +169,10 @@ const styles = StyleSheet.create({
     color: Colors.primary500,
   },
   image: {
-    height: 94,
-    minWidth: 94,
-    width: 'auto',
+    height: '80%',
+    width: '80%',
     borderRadius: 4,
-    // elevation: 8,
+    elevation: 8,
     shadowColor: "#000",
     shadowOffset: {
       width: 2,

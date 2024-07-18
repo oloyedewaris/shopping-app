@@ -1,16 +1,17 @@
 import { Pressable, FlatList, StyleSheet, Text, View } from "react-native";
-import { useCart } from "@/contexts/CartContext";
+import { useShop } from "@/contexts/CartContext";
 import CartItem from "@/components/CartItem";
 import Button from "@/components/Button";
 import { formatCurrency } from "@/utils/helpers";
 import { Colors } from "@/utils/styles";
 import { useNavigation } from "@react-navigation/native";
-import { BottomNavigationList } from "@/types/navigation.type";
+import { BottomNavigationList, ShopContextType } from "@/types/all.type";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { deliveryFee } from "@/utils/constants";
 
 function CartScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<BottomNavigationList>>();
-  const { cart, totalPrice }: any = useCart();
+  const { cart, totalCartPrice } = useShop() as ShopContextType;
 
   function checkout() {
     navigation.navigate('Checkout');
@@ -41,16 +42,16 @@ function CartScreen() {
             <Text style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Shopping Summary</Text>
             <View style={styles.flex}>
               <Text style={styles.text}>Sub-Total</Text>
-              <Text style={styles.header}>{formatCurrency(totalPrice)}</Text>
+              <Text style={styles.header}>{formatCurrency(totalCartPrice)}</Text>
             </View>
             <View style={styles.flex}>
               <Text style={styles.text}>Delivery Fee</Text>
-              <Text style={styles.header}>{formatCurrency(1500)}</Text>
+              <Text style={styles.header}>{formatCurrency(deliveryFee)}</Text>
             </View>
             <View style={{ width: '100%', marginVertical: 15, height: 1, borderColor: '#191919', borderWidth: 0.5 }} />
             <View style={styles.flex}>
               <Text style={styles.text}>Total Amount</Text>
-              <Text style={styles.header}>{formatCurrency(1500 + Number(totalPrice))}</Text>
+              <Text style={styles.header}>{formatCurrency(deliveryFee + Number(totalCartPrice))}</Text>
             </View>
 
             <Button style={{ borderRadius: 20, marginTop: 10 }} onPress={checkout}>Checkout</Button>

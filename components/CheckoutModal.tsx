@@ -1,11 +1,11 @@
 import { Image, Modal, SafeAreaView, StyleSheet, Text, View } from "react-native";
-import { useCart } from "@/contexts/CartContext";
+import { useShop } from "@/contexts/CartContext";
 import Header from "@/components/Header";
 import { formatCurrency } from "@/utils/helpers";
 import Button from "@/components/Button";
 import { Colors } from "@/utils/styles";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { BottomNavigationList } from "@/types/navigation.type";
+import { BottomNavigationList } from "@/types/all.type";
 
 interface ModalProps {
   isVisible: boolean;

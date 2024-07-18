@@ -4,23 +4,14 @@ import { ChangeEvent } from "react";
 
 interface InputProps extends TextInputProps {
   style: StyleProp<TextStyle>;
-  onChangeText: (e: string | ChangeEvent<any>) => void;
-  value: string;
-  multiline?: boolean;
   error?: string | false | undefined;
-  placeholder?: string;
 }
 
-function Input({ style, onChangeText, value, error, placeholder, onBlur, ...rest }: InputProps) {
+function Input({ style, error, ...rest }: InputProps) {
   return (
     <View>
       <TextInput
-        multiline
-        onBlur={onBlur}
-        placeholder={placeholder}
         style={[style, { borderColor: error ? 'red' : '#2A2A2A80' }]}
-        onChangeText={onChangeText}
-        value={value}
         {...rest}
       />
       {error && <Text style={{ fontSize: 10, fontWeight: '400', color: 'red' }}>{error}</Text>}

@@ -1,5 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Alert, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { formatCurrency } from "@/utils/helpers";
 import Header from "@/components/Header";
 import { Colors } from "@/utils/styles";
@@ -9,81 +8,50 @@ import { ShopContextType, ProductType, HomeNavigationList } from "@/types/all.ty
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-function CartItem({ cartItem }: { cartItem: ProductType }) {
-  const { increaseItemCount, decreaseItemCount, cart, removeFromCart } = useShop() as ShopContextType;
+function SavedItem({ savedItem }: { savedItem: ProductType }) {
+  const { removeFromSaved } = useShop() as ShopContextType;
   const navigation = useNavigation<NativeStackNavigationProp<HomeNavigationList>>();
 
   function viewProduct() {
-    navigation.navigate("Product", { product: cartItem });
+    navigation.navigate("Product", { product: savedItem });
   }
 
   function handleRemoveItem() {
-    Alert.alert(
-      "Remove Item",
-      `Are you sure you want to remove ${cartItem.name} from cart?`,
-      [
-        {
-          text: "No",
-          style: "cancel",
-        },
-        {
-          text: "YES!!",
-          onPress: () => removeFromCart(cartItem.unique_id),
-        },
-      ],
-      { cancelable: true }
-    );
-  }
-
-  const addMore = () => {
-    increaseItemCount(cartItem.unique_id)
-  }
-  const removeFrom = () => {
-    if (Number(cartItem?.count) > 1)
-      decreaseItemCount(cartItem.unique_id)
+    removeFromSaved(savedItem.unique_id)
   }
 
   return (
-    <View style={style.rootContainer}>
+    <TouchableOpacity onPress={viewProduct} style={style.rootContainer}>
       <View style={style.flex}>
         <View style={style.nextFlex}>
-          <TouchableOpacity onPress={viewProduct}>
-            <Image
-              source={{
-                uri: `https://api.timbu.cloud/images/${cartItem.photos[0].url}`,
-              }}
-              style={style.image}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
+          <Image
+            source={{
+              uri: `https://api.timbu.cloud/images/${savedItem.photos[0].url}`,
+            }}
+            style={style.image}
+            resizeMode="contain"
+          />
           <View>
-            <Header childrenStyle={style.header}>{cartItem.name}</Header>
-            <Text style={style.description}>{cartItem.description}</Text>
+            <Header childrenStyle={style.header}>{savedItem.name}</Header>
+            <Text style={style.description}>{savedItem.description}</Text>
             <View style={{ gap: 20, flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity disabled={Number(cartItem?.count) <= 1} onPress={removeFrom} style={style.box}>
-                <Text>-</Text>
-              </TouchableOpacity>
-              <Text style={{ height: 20 }}>{cartItem?.count}</Text>
-              <TouchableOpacity onPress={addMore} style={style.box}>
-                <Text>+</Text>
-              </TouchableOpacity>
+              <Text style={style.price}>
+                {formatCurrency(savedItem.current_price[0].NGN[0])}
+              </Text>
             </View>
           </View>
         </View>
         <View style={style.endCon}>
-          <Pressable style={style.btnRem} onPress={handleRemoveItem}>
-            <Ionicons name="trash-outline" size={20} color="#2A2A2A99" />
-          </Pressable>
-          <Text style={style.price}>
-            {formatCurrency(cartItem.current_price[0].NGN[0])}
-          </Text>
+          <TouchableOpacity style={style.btnRem} onPress={handleRemoveItem}>
+            <AntDesign name="close" size={24} color="black" />
+          </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
-export default CartItem;
+export default SavedItem;
 
 const style = StyleSheet.create({
   rootContainer: {

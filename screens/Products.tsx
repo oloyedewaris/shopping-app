@@ -3,8 +3,9 @@ import { FlatList, ImageBackground, ScrollView, StyleSheet, Text, View } from "r
 import { allProducts } from "@/utils/http";
 import ProductItem from "@/components/ProductItem";
 import PageLoader from "@/components/PageLoader";
+import { CategoryType, ProductType } from "@/types/all.type";
 
-function Products() {
+function ProductsScren() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -14,8 +15,8 @@ function Products() {
       try {
         const data = await allProducts();
         setProducts(data.items);
-      } catch (error: any) {
-        console.error(error.message);
+      } catch (error) {
+        console.error((error as Error).message);
       } finally {
         setIsLoading(false);
       }
@@ -25,18 +26,18 @@ function Products() {
 
   if (isLoading) return <PageLoader />;
 
-  const categories = [
+  const categories: CategoryType[] = [
     { title: "women’s fashion", products: [] },
     { title: 'tech gadget', products: [] },
     { title: "men’s fashion", products: [] }
   ];
 
 
-  let newCategories: any = [];
+  let fetchedCategories: CategoryType[] = [];
 
   categories.forEach(category => {
-    const categoryProducts = products.filter((product: any) => product?.categories[0]?.name === category?.title)
-    newCategories.push({ ...category, products: categoryProducts });
+    const categoryProducts = products.filter((product: ProductType) => product?.categories[0]?.name === category?.title)
+    fetchedCategories.push({ ...category, products: categoryProducts });
   })
 
   return (
@@ -53,7 +54,7 @@ function Products() {
             </Text>
           </View>
         </ImageBackground>
-        {newCategories.map((category: any) => (
+        {fetchedCategories.map((category: CategoryType) => (
           <View key={category?.title} style={{ marginTop: 40, paddingBottom: 10 }}>
             <Text style={{ fontSize: 20, fontWeight: '600', textTransform: 'capitalize' }}>{category?.title}</Text>
             <FlatList
@@ -62,7 +63,7 @@ function Products() {
               data={category?.products || []}
               horizontal
               renderItem={({ item }) => <ProductItem product={item} />}
-              keyExtractor={(item: any) => `${item.unique_id}`}
+              keyExtractor={(item: ProductType) => `${item.unique_id}`}
             />
           </View>
         ))}
@@ -71,7 +72,7 @@ function Products() {
   );
 }
 
-export default Products;
+export default ProductsScren;
 
 
 const styles = StyleSheet.create({

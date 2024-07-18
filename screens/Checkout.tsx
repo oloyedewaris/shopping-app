@@ -1,25 +1,27 @@
 import { Pressable, StyleSheet, Text, View, TextInput, Image, TouchableOpacity } from "react-native";
-import { useCart } from "@/contexts/CartContext";
+import { useShop } from "@/contexts/CartContext";
 import Button from "@/components/Button";
 import { useCallback, useState } from "react";
 import { Colors } from "@/utils/styles";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { BottomNavigationList } from "@/types/navigation.type";
+import { BottomNavigationList, ShopContextType } from "@/types/all.type";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Input from "@/components/Input";
+import { deliveryFee } from "@/utils/constants";
 
 function CheckoutScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<BottomNavigationList>>();
-  const { cart, clearCart }: any = useCart();
+  const { cart, clearCart, addToHistory, totalCartPrice } = useShop() as ShopContextType;
   const [step, setStep] = useState(1);
-  const [pickupToUse, setPickUpToUse] = useState<any>(null);
 
   const deliverySchema = Yup.object().shape({
     delivery: Yup.string()
       .required('Required'),
+    pickup: Yup.string()
+      .required('Select a pickup location'),
     contact1: Yup.string()
       .required('Required')
       .min(11, 'Contact should be at least 11 digit'),
@@ -43,6 +45,7 @@ function CheckoutScreen() {
   const firstFormik = useFormik({
     initialValues: {
       delivery: '',
+      pickup: '',
       contact1: '',
       contact2: ''
     },
@@ -62,6 +65,18 @@ function CheckoutScreen() {
     },
     validationSchema: cardSchema,
     onSubmit: values => {
+      const dataToSubmit = {
+        address: firstFormik.values.delivery,
+        time: new Date(),
+        timestamp: Date.now(),
+        totalAmount: totalCartPrice,
+        contact1: firstFormik.values.contact1,
+        contact2: firstFormik.values.contact2,
+        pickup: firstFormik.values.pickup,
+        cart: cart,
+        deliveryFee: deliveryFee,
+      }
+      addToHistory(dataToSubmit)
       clearCart();
       setStep(3);
     }
@@ -82,8 +97,8 @@ function CheckoutScreen() {
   }
 
   const pickups = [
-    { id: 1, address: 'Old Secretariat Complex, Area 1, Garki Abaji Abji' },
-    { id: 2, address: 'Sokoto Street, Area 1, Garki Area 1 AMAC' },
+    'Old Secretariat Complex, Area 1, Garki Abaji Abji',
+    'Sokoto Street, Area 1, Garki Area 1 AMAC',
   ]
 
   return (
@@ -105,16 +120,21 @@ function CheckoutScreen() {
                 <Text style={{ fontSize: 14, fontWeight: 500, }}>Pickup</Text>
                 {pickups.map(pickup => (
                   <TouchableOpacity
-                    key={pickup.id}
-                    onPress={() => setPickUpToUse(pickup)}
+                    key={pickup}
+                    onPress={() => firstFormik.setFieldValue('pickup', pickup)}
                     style={{ marginTop: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}
                   >
-                    <View style={[styles.checkBg, { borderColor: pickupToUse?.id === pickup.id ? Colors.primary500 : '#2A2A2AAB' }]}>
-                      <View style={[styles.checkInner, { backgroundColor: pickupToUse?.id === pickup.id ? Colors.primary500 : '#2A2A2AAB' }]} />
+                    <View style={[styles.checkBg, { borderColor: firstFormik.values.pickup === pickup ? Colors.primary500 : '#2A2A2AAB' }]}>
+                      {firstFormik.values.pickup === pickup && <View style={[styles.checkInner, { backgroundColor: Colors.primary500 }]} />}
                     </View>
-                    <Text style={{ fontSize: 12, fontWeight: 400, color: '#2A2A2AAB' }}>{pickup.address}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: 400, color: '#2A2A2AAB' }}>{pickup}</Text>
                   </TouchableOpacity>
                 ))}
+                {firstFormik.errors.pickup && (
+                  <Text style={{ fontSize: 10, fontWeight: '400', color: 'red', marginTop: 10 }}>
+                    {firstFormik.errors.pickup}
+                  </Text>
+                )}
               </View>
               <View style={{ marginTop: 30 }}>
                 <Text style={{ fontSize: 14, fontWeight: 500, }}>Delivery</Text>
